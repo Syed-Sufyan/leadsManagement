@@ -1,45 +1,34 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { AuthProvider } from './src/context/AuthProvider';
+import AppNavigator from './src/navigation/AppNavigator';
+import { LeadsProvider } from './src/context/LeadsContext';
+import { StatusBar } from 'react-native';
+import firebase from '@react-native-firebase/app';
+import FlashMessage from "react-native-flash-message";
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
-
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
-  );
-}
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
+const App = () => {
+  useEffect(() => {
+    if (!firebase.apps.length) {
+      try {
+        firebase.initializeApp({} as any);
+      } catch (e) {
+        console.log("Firebase Init Error: ", e);
+      }
+    }
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
+    <NavigationContainer>
+      <AuthProvider>
+        <LeadsProvider>
+          <StatusBar barStyle="dark-content" />
+          <FlashMessage position="top" statusBarHeight={40} floating ={true} />
+          <AppNavigator />
+        </LeadsProvider>
+      </AuthProvider>
+    </NavigationContainer>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+};
 
 export default App;
